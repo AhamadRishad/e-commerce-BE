@@ -10,3 +10,13 @@ export const generateToken = (email) =>{
             
       });
 }
+
+//adminToken
+
+export const generateAdminToken = (user)=>{
+    return jwt.sign({data:user.id , role:user.role},secretKey,{
+        expiresIn: '1d',
+            
+      
+    });
+};
