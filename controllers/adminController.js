@@ -73,11 +73,52 @@ export const login = async (req,res) => {
             token
         });       
     } catch (error) {
+        console.log(error, "Something wrong");
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+//get-all-admins
+
+export const getAllAdmins = async (req,res) => {
+    try {
+        console.log('hitted get all admins');
+        const admins = await Admin.find();
+        res.status(200).send(admins);
         
+    } catch (error) {
+        console.log(error, "Something wrong");
+        res.status(500).send("admin doesn't exist ");
+    }
+}
+
+export const removeAdmin = async (req, res) => {
+    try {
+        // its not complete the only manager can delete admin
+        const id = req.params.id;
+        console.log(id);
+
+        const admin = await Admin.find({ _id: id });
+        if(!admin){
+            return res.status(404).send("Admin not found");
+        }
+
+        const remove = await Admin.deleteOne({ _id: id })
+
+        if(!remove) {
+            return res.status(404).send("failed to remove");
+        }
+
+        return res.send('removed successfully')
+    } catch (error) {
+        console.log(error, "Something wrong");
+        res.status(500).send("could't remove admin ");
     }
 }
 
 export default {
     signup,
     login,
+    getAllAdmins,
+    removeAdmin,
 }
