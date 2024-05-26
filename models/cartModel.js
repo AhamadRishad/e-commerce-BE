@@ -1,30 +1,40 @@
 import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema({
-    title:{
+    productName:{
         type:String,
         required:true,
-        minLength:3,
+        minLength:1,
         MaxLength:30,
         
     },
-    description: {
+    brandName: {
         type:String,
         required:true,
-        minLength:3,
-        MaxLength:100,
+        MaxLength:30,
     },
     price: {
         type:Number,
         required:true,
 
     },
+
     image: {
         type:String,
         required:true,
         
     },
-   
+   category: {
+    type:String,
+    minLength:1,
+    maxLength:20,
+    required:true,
+   },
+   description:{
+    type:String,
+    minLength:1,
+    maxLength:100,
+   },
     admin: [{ type: mongoose.Types.ObjectId, ref: "admin" }],
 
 },

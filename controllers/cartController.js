@@ -15,7 +15,7 @@ export const getCart = async (req, res) => {
     
 }
 
-// add to cart
+//  upload cart
 
 export const addCart = async (req, res) => {
     try {
@@ -34,7 +34,7 @@ export const addCart = async (req, res) => {
             const imageUrl = result.url;
             const body = req.body;
 
-            const {title , description , price ,mobile , adminEmail} = body;
+            const {productName , brandName , price ,category ,description, adminEmail} = body;
 
             const findAdmin = await Admin.find({email: adminEmail});
 
@@ -43,10 +43,11 @@ export const addCart = async (req, res) => {
             }
                
             const createCart = new Cart({
-                title,
-                description,
+                productName,
+                brandName,
                 price,
-                mobile,
+                category,
+                description,
                 admin: findAdmin._id,
                 image: imageUrl
             })

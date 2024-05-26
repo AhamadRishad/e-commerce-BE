@@ -78,7 +78,7 @@ export const login = async (req,res) => {
     }
 }
 
-//get-all-admins
+//get-all-admins this api is to manager
 
 export const getAllAdmins = async (req,res) => {
     try {
@@ -94,7 +94,7 @@ export const getAllAdmins = async (req,res) => {
 
 export const removeAdmin = async (req, res) => {
     try {
-        // its not complete the only manager can delete admin
+        // its not complete the only manager can delete admin 
         const id = req.params.id;
         console.log(id);
 

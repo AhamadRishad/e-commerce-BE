@@ -3,6 +3,7 @@ import User from "../models/userModels.js";
 import { generateToken } from "../utils/generateToken.js";
 
 
+
 export const signup = async (req,res) => {
     try {
         console.log('hitted')
@@ -68,7 +69,8 @@ export const signin = async (req,res) => {
 
         const token = generateToken(email);
         res.cookie('token',token);
-        res.status(201).send('Logged in');
+        // res.status(201).send('Logged in');
+        res.json({ message: "signup successfully", token });
             
     } catch (error) {
         console.log(error, "Something wrong");
