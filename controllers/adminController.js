@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import Admin from "../models/adminModel.js";
 import { generateAdminToken } from "../utils/generateToken.js";
+import Cart from "../models/cartModel.js";
+// import Cart from "../models/cartModel.js";
 
 export const signup = async (req, res) => {
 
@@ -71,39 +73,53 @@ export const login = async (req,res) => {
         res.json({
             message:"Logged in !",
             token
-        });       
+        });   
+
     } catch (error) {
         console.log(error, "Something wrong");
         res.status(500).send("Internal Server Error");
     }
 }
 
-//get-all-admins this api is to manager
-
-export const getAllAdmins = async (req,res) => {
+export const updateProduct = async (req, res) => {
     try {
-        console.log('hitted get all admins');
-        const admins = await Admin.find();
-        res.status(200).send(admins);
+        console.log("hittted to update produt")
+        const id = req.params.id;
+        console.log(id);
+
+        const {description, price, productName, brandName, category, admin} = req.body;
+        const updatedProduct = await Cart.findOneAndUpdate(
+          { _id: id },
+          { description, price, productName, brandName ,category ,admin},
+          {
+            new: true,
+          }
+        );
+        console.log(updatedProduct)
+        if (!updatedProduct) {
+          return res.send("Course is not updated");
+        }
+        console.log(updatedProduct);
+        return res.send(updatedProduct);
         
     } catch (error) {
         console.log(error, "Something wrong");
-        res.status(500).send("admin doesn't exist ");
+        res.status(500).send("Internal Server Error");
     }
-}
+  };
 
-export const removeAdmin = async (req, res) => {
+  export const removeProduct = async (req, res) => {
     try {
         // its not complete the only manager can delete admin 
         const id = req.params.id;
         console.log(id);
 
-        const admin = await Admin.find({ _id: id });
-        if(!admin){
-            return res.status(404).send("Admin not found");
+        const product = await Cart.find({ _id: id });
+        if(!product){
+            return res.status(404).send("product not found");
         }
 
-        const remove = await Admin.deleteOne({ _id: id })
+        const remove = await Cart.deleteOne({ _id: id })
 
         if(!remove) {
             return res.status(404).send("failed to remove");
@@ -112,13 +128,21 @@ export const removeAdmin = async (req, res) => {
         return res.send('removed successfully')
     } catch (error) {
         console.log(error, "Something wrong");
-        res.status(500).send("could't remove admin ");
+        res.status(500).send("Internal Server Error");
     }
 }
+
+
+
+
+
+
 
 export default {
     signup,
     login,
-    getAllAdmins,
-    removeAdmin,
+    updateProduct,
+    removeProduct,
+    
+    
 }

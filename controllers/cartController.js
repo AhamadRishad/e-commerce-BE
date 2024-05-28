@@ -7,6 +7,7 @@ import Cart from "../models/cartModel.js"
 export const getCart = async (req, res) => {
    try {
     const carts = await Cart.find();
+    // const carts = await Cart.find().sort({createdAt : -1}); check it in postman this code is to show latest upload first
     res.status(200).send(carts);
    } catch (error) {
     console.log(error, "Something wrong");
@@ -36,7 +37,21 @@ export const addCart = async (req, res) => {
 
             const {productName , brandName , price ,category ,description, adminEmail} = body;
 
-            const findAdmin = await Admin.find({email: adminEmail});
+            console.log(body)
+            if (!adminEmail) {
+                return res.status(400).send('adminEmail is required');
+            }
+
+            let findAdmin = await Admin.findOne({email: adminEmail});
+            // const adminDetail = await Admin.find(body.adminEmail)
+            // console.log("findAdmin :",findAdmin);
+            // console.log("adminDetail",adminDetail);
+
+            // if (!findAdmin) {
+            //     console.log(`Admin not found with findOne, trying find...`);
+            //     const admins = await Admin.find({ email: adminEmail });
+            //     // findAdmin = admins.length > 0 ? admins[0] : null;
+            // }
 
             if(!findAdmin){
                 return res.status(400).send('admin is not exist');
@@ -53,10 +68,16 @@ export const addCart = async (req, res) => {
             })
 
             const newCreatedCart = await createCart.save();
+
             if(!newCreatedCart){
                 return res.status(400).send('cart is not created');
             }
-            res.status(201).send(newCreatedCart);
+
+             // Add the product ID to the admin's cart array
+             findAdmin.cart.push(newCreatedCart._id);
+             await findAdmin.save();
+
+            res.status(201).send(newCreatedCart)
         })
     } catch (error) {
         console.log("something went wrong", error);

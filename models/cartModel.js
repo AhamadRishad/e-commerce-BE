@@ -28,7 +28,7 @@ const cartSchema = new mongoose.Schema({
     type:String,
     minLength:1,
     maxLength:20,
-    required:true,
+   
    },
    description:{
     type:String,

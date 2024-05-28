@@ -5,6 +5,7 @@ import userRouter from "./routes/userRoutes.js";
 import connectDb from "./config/db.js";
 import dotenv from "dotenv";
 import adminRouter from "./routes/adminRoutes.js";
+import managerRouter from "./routes/managerRouter.js";
 
 
 
@@ -23,6 +24,7 @@ app.use(
 );
 app.use('/api/v1/user',userRouter);
 app.use('/api/v1/admin',adminRouter);
+app.use('/api/v1/manager',managerRouter)
 
 const port = process.env.PORT || 3001;
 

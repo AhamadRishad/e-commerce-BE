@@ -10,7 +10,7 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
 
     console.log("data",user.data);
     const findUser = await User.findOne({email: user.data});
-
+    console.log(findUser);
     if(!findUser){
         return res.json({message:"authentication failed", success:false})
     }
@@ -18,6 +18,7 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
     res.json({message:"authenticated User", success:true})
 
 });
+
 userRouter.get("/",(req,res) => {
     res.send("user route")
 });
