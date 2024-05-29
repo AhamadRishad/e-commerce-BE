@@ -24,7 +24,7 @@ app.use(
 );
 app.use('/api/v1/user',userRouter);
 app.use('/api/v1/admin',adminRouter);
-app.use('/api/v1/manager',managerRouter)
+app.use('/api/v1/manager',managerRouter);
 
 const port = process.env.PORT || 3001;
 

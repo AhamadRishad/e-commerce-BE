@@ -6,7 +6,7 @@ dotenv.config();
 function authenticateManager(req ,res , next){
     const token = req.cookies.token;
     
-    jwt.verify(token,process.env.SE ,(err ,user) => {
+    jwt.verify(token,process.env.SECRET_ADMIN ,(err ,user) => {
         if(err) return res.status(403)
         req.user = user;
         if(req.user.role !== "manager"){

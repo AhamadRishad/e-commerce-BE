@@ -1,4 +1,5 @@
 import express from "express"
+import jwt from "jsonwebtoken";
 import {   login, removeProduct, signup, updateProduct } from "../controllers/adminController.js";
 import { addCart, getCart } from "../controllers/cartController.js";
 import upload from "../middlewares/upload-middleware.js";
@@ -64,6 +65,37 @@ adminRouter.put("/update-product/:id", updateProduct);
 
 
 })
+
+
+  adminRouter.get("/check-admin", authenticateAdmin, async (req, res) => {
+    const admin = req.admin;
+
+    console.log("data",admin.data);
+
+   
+    
+    
+    const findAdmin = await Admin.findById(admin.data);
+    console.log("findAdmin",findAdmin);
+    if(!findAdmin){
+        return res.json({message:"authentication failed", success:false})
+    }
+  
+
+    console.log("Admin role:", admin.role);
+  
+    if (admin.role !== "admin" && admin.role !== "manager" ) {
+        console.error("Role not authorized:", admin.role);
+     
+        return res.status(403).send("Not authenticated");
+    }
+
+      res.json({message:"authenticated User", success:true})
+   
+ 
+
+});
+
 
 adminRouter.get("/",(req,res)=>{
     res.send("admin route");

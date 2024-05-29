@@ -14,7 +14,7 @@ export const generateToken = (email) =>{
 //adminToken
 
 export const generateAdminToken = (user)=>{
-    return jwt.sign({data:user.id , role:user.role},secretKey,{
+    return jwt.sign({data:user.id , role:user.role},process.env.SECRET_ADMIN,{
         expiresIn: '1d',
             
       
