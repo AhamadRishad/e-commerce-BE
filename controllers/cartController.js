@@ -24,14 +24,16 @@ export const addCart = async (req, res) => {
         if(!req.file){
             return res.status(400).send('image is required');
         }
+        const filePath = req.file.path; // Path of the file to upload
+        const folderName = 'capstoneProject'; // cloudinary folder name
 
-        cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+          cloudinaryInstance.uploader.upload(filePath, {folder:folderName}, async (err , result) => {
             if(err){
                 console.log(`image upload err : ${err}`);
-                return res.status(400).send('image upload failed');
-                
-            }
-            // console.log(result)
+                return res.status(400).send('image upload failed');        
+                }
+
+
             const imageUrl = result.url;
             const body = req.body;
 

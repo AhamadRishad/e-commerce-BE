@@ -31,8 +31,9 @@ adminRouter.post("/add-cart",upload.single("image"),addCart)
 
 adminRouter.put("/update-product/:id", updateProduct);
 
-  adminRouter.get('/adminProduct',authenticateAdmin ,async (req,res) => {
+  adminRouter.post('/adminProduct',authenticateAdmin ,async (req,res) => {
     try {
+        console.log("hitted to admin products")
         const admin = req.admin;
     //   admin has req.admin {
     //     data: '665449a4fbd709621afebc41',
@@ -99,6 +100,9 @@ adminRouter.put("/update-product/:id", updateProduct);
 
 adminRouter.get("/",(req,res)=>{
     res.send("admin route");
+});
+adminRouter.post("/",(req,res) => {
+ res.send("admin post route")
 });
 
 export default adminRouter;
