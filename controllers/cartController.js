@@ -1,3 +1,4 @@
+import e from "express";
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import Admin from "../models/adminModel.js";
 import Cart from "../models/cartModel.js"
@@ -37,7 +38,7 @@ export const addCart = async (req, res) => {
             const imageUrl = result.url;
             const body = req.body;
 
-            const {productName , brandName , price ,category ,description, adminEmail} = body;
+            const {productName , brandName , price ,category ,description, adminEmail, sellingPrice} = body;
 
             console.log(body)
             if (!adminEmail) {
@@ -63,6 +64,7 @@ export const addCart = async (req, res) => {
                 productName,
                 brandName,
                 price,
+                sellingPrice,
                 category,
                 description,
                 admin: findAdmin._id,
@@ -87,7 +89,104 @@ export const addCart = async (req, res) => {
     }
 }
 
+// Ond all category one product to display / showcase 
+export const getCategoryOneProduct = async (req,res) => {
+    try {
+        const productCategory = await Cart.distinct("category");
+        // console.log("category :",productCategory);
+
+        //array to store one product from each category
+        const productByCategory = [];
+
+        for(const category of productCategory){
+            const product = await Cart.findOne({category:category});
+            
+            if(product){
+                productByCategory.push(product);
+            }
+        }
+
+        res.json({
+            message:"category product",
+            data:productByCategory,
+            success:true,
+            error:false
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: error.message || err,
+            error:true,
+            success:false
+        })
+    }
+}
+
+// export const getCategoryWiseProducts = async (req,res) => {
+//   try {
+//     console.log('hitted to getCategoryWisePorducts')
+//     const { category } = req?.body || req?.query
+//     const product = await Cart.find({category: category })
+//     console.log(product);
+
+//     res.json({
+//         data : product,
+//         message : "Product",
+//         success : true,
+//         error : false
+//     })
+//   } catch (error) {
+//     res.status(400).json({
+//         message : err.message || err,
+//         error : true,
+//         success : false
+//     })
+//   }
+// }
+
+
+export const getCategoryWiseProducts = async (req, res) => {
+    try {
+      console.log('hitted to getCategoryWisePorducts');
+      
+      // Extract category from request body or query parameters
+      const category = req.body.category 
+      
+      if (!category) {
+        return res.status(400).json({
+          message: 'Category is required',
+          error: true,
+          success: false
+        });
+      }
+  
+      // Find products by category
+      const products = await Cart.find({ category });
+  
+      console.log(products);
+  
+      // Respond with the found products
+      res.json({
+        data: products,
+        message: "Products retrieved successfully",
+        success: true,
+        error: false
+      });
+    } catch (err) {
+      console.error('Error retrieving products:', err);
+  
+      // Respond with the error message
+      res.status(500).json({
+        message: err.message || 'Internal server error',
+        error: true,
+        success: false
+      });
+    }
+  };
+ 
+
 export default {
     getCart,
     addCart,
+    getCategoryOneProduct,
+    getCategoryWiseProducts
 }

@@ -25,7 +25,7 @@ adminRouter.get("/categories",(req, res) =>{
    
 });
 
-adminRouter.delete("/delete-admin/:id",removeProduct)
+adminRouter.delete("/delete-product/:id",removeProduct)
 
 adminRouter.post("/add-cart",upload.single("image"),addCart)
 
@@ -33,7 +33,7 @@ adminRouter.put("/update-product/:id", updateProduct);
 
   adminRouter.post('/adminProduct',authenticateAdmin ,async (req,res) => {
     try {
-        console.log("hitted to admin products")
+        // console.log("hitted to admin products")
         const admin = req.admin;
     //   admin has req.admin {
     //     data: '665449a4fbd709621afebc41',
@@ -42,7 +42,7 @@ adminRouter.put("/update-product/:id", updateProduct);
     //     exp: 1716939448
     //   }
     //   data is his id
-        console.log("data : ",admin.data);
+        // console.log("data : ",admin.data);
       
         if (admin.role !== "admin" ) {
                  return res.status(403).send("Not authenticated");
@@ -71,19 +71,19 @@ adminRouter.put("/update-product/:id", updateProduct);
   adminRouter.get("/check-admin", authenticateAdmin, async (req, res) => {
     const admin = req.admin;
 
-    console.log("data",admin.data);
+    // console.log("data",admin.data);
 
    
     
     
     const findAdmin = await Admin.findById(admin.data);
-    console.log("findAdmin",findAdmin);
+    // console.log("findAdmin",findAdmin);
     if(!findAdmin){
         return res.json({message:"authentication failed", success:false})
     }
   
 
-    console.log("Admin role:", admin.role);
+    // console.log("Admin role:", admin.role);
   
     if (admin.role !== "admin" && admin.role !== "manager" ) {
         console.error("Role not authorized:", admin.role);

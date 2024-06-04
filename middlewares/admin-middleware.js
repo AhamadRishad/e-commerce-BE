@@ -12,8 +12,8 @@ dotenv.config();
     jwt.verify(token, process.env.SECRET_ADMIN, (err, admin) => {
         if (err) return res.status(403).send("Token not valid or missing");        
         req.admin = admin;
-       console.log("req.admin",req.admin)
-       console.log("req.admin.role : ",req.admin.role )
+      //  console.log("req.admin",req.admin)
+      //  console.log("req.admin.role : ",req.admin.role )
         // if (req.admin.role !== "admin" || req.admin.role !== "manager") {
         //        return res.status(403).send("Not authenticated");
         //      }

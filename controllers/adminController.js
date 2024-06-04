@@ -87,14 +87,15 @@ export const updateProduct = async (req, res) => {
         const id = req.params.id;
         console.log(id);
 
-        const {description, price, productName, brandName, category, admin} = req.body;
+        const {description, price, productName, brandName, category,sellingPrice } = req.body;
+        console.log('req.body :',req.body);
         const updatedProduct = await Cart.findOneAndUpdate(
           { _id: id },
-          { description, price, productName, brandName ,category ,admin},
+          { description, price, productName, brandName ,category,sellingPrice },
           {
             new: true,
           }
-        );
+   );
         console.log(updatedProduct)
         if (!updatedProduct) {
           return res.send("Course is not updated");
@@ -111,14 +112,15 @@ export const updateProduct = async (req, res) => {
   export const removeProduct = async (req, res) => {
     try {
         // its not complete the only manager can delete admin 
+        console.log("Hitted to pruct remove")
         const id = req.params.id;
         console.log(id);
 
-        const product = await Cart.find({ _id: id });
+        const product = await Cart.findById(id);
         if(!product){
             return res.status(404).send("product not found");
         }
-
+        console.log(product);
         const remove = await Cart.deleteOne({ _id: id })
 
         if(!remove) {
