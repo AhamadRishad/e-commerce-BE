@@ -120,8 +120,24 @@ export const updateProduct = async (req, res) => {
         if(!product){
             return res.status(404).send("product not found");
         }
-        console.log(product);
-        const remove = await Cart.deleteOne({ _id: id })
+        // product.admin.pop(id)
+        // await product.save()
+       
+        
+       const relatedAdmin = product.admin;
+       const removeRelatedAdmin = await Admin.findById(relatedAdmin);
+    //    console.log("removeRelatedAdmin :",removeRelatedAdmin);
+      const  removeIdFromAdmin = removeRelatedAdmin.cart;
+    //   console.log("removeIdFromAdmin :",removeIdFromAdmin)
+    if(removeIdFromAdmin == id){
+        // console.log('yes its same')
+        removeRelatedAdmin.cart.pop(id)
+        removeRelatedAdmin.save()
+    }
+      const remove = await Cart.deleteOne({ _id: id })
+       
+        console.log("product :",product);
+        console.log("admin id :", product.admin)
 
         if(!remove) {
             return res.status(404).send("failed to remove");
