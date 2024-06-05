@@ -2,7 +2,7 @@ import express from "express";
 import {signup,  signin } from "../controllers/userController.js";
 import authenticateUser from "../middlewares/user-middleware.js";
 import User from "../models/userModels.js";
-import { getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
+import { getCardDetails, getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
 
 const userRouter = express.Router();
 
@@ -28,5 +28,6 @@ userRouter.post('/signup', signup );
 userRouter.post('/signin', signin );
 userRouter.get('/all-single-category',getCategoryOneProduct);
 userRouter.post('/category-wise-products',getCategoryWiseProducts);
+userRouter.post('/get-Card-details',getCardDetails)
 
 export default userRouter;

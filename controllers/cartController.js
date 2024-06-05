@@ -1,4 +1,4 @@
-import e from "express";
+import express from "express";
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import Admin from "../models/adminModel.js";
 import Cart from "../models/cartModel.js"
@@ -121,28 +121,6 @@ export const getCategoryOneProduct = async (req,res) => {
     }
 }
 
-// export const getCategoryWiseProducts = async (req,res) => {
-//   try {
-//     console.log('hitted to getCategoryWisePorducts')
-//     const { category } = req?.body || req?.query
-//     const product = await Cart.find({category: category })
-//     console.log(product);
-
-//     res.json({
-//         data : product,
-//         message : "Product",
-//         success : true,
-//         error : false
-//     })
-//   } catch (error) {
-//     res.status(400).json({
-//         message : err.message || err,
-//         error : true,
-//         success : false
-//     })
-//   }
-// }
-
 
 export const getCategoryWiseProducts = async (req, res) => {
     try {
@@ -162,7 +140,7 @@ export const getCategoryWiseProducts = async (req, res) => {
       // Find products by category
       const products = await Cart.find({ category });
   
-      console.log(products);
+      // console.log(products);
   
       // Respond with the found products
       res.json({
@@ -183,10 +161,38 @@ export const getCategoryWiseProducts = async (req, res) => {
     }
   };
  
+  export const getCardDetails = async (req,res) => {
+    try {
+      console.log('hitted to getCartDetails')
+      // console.log("req.body : ",req.body)
+      const { productId } = req.body
+
+      const product = await Cart.findById(productId) 
+       
+      if(!product){
+          return res.status(404).send("product not found");
+      }
+
+      // console.log(product)
+      res.json({
+        data:product,
+        message:"OK",
+        success:true,
+        error:false
+      })
+    } catch (error) {
+      res.json({
+        message: error.message || err,
+        error:true,
+        success:false
+      })
+    }
+  }
 
 export default {
     getCart,
     addCart,
     getCategoryOneProduct,
-    getCategoryWiseProducts
+    getCategoryWiseProducts,
+    getCardDetails
 }
