@@ -36,10 +36,10 @@ export const signup = async (req, res) => {
             return res.send("Admin is not created something went wrong")
         }
 
-        const token = generateAdminToken(savedAdmin);
-        res.cookie("token",token);
+        const AdminToken = generateAdminToken(savedAdmin);
+        res.cookie("AdminToken",AdminToken);
         res.json({
-            message:"signed in ! " , token
+            message:"signed in ! " , AdminToken
         });
             
 
@@ -67,12 +67,12 @@ export const login = async (req,res) => {
             return res.status(400).send("Invalid Password");
         }
 
-        const token = generateAdminToken(admin);
+        const AdminToken = generateAdminToken(admin);
         
-        res.cookie("token",token);
+        res.cookie("AdminToken",AdminToken);
         res.json({
             message:"Logged in !",
-            token
+            AdminToken
         });   
 
     } catch (error) {

@@ -37,7 +37,7 @@ const cartSchema = new mongoose.Schema({
    description:{
     type:String,
     minLength:1,
-    maxLength:100,
+    maxLength:1000,
    },
     admin: [{ type: mongoose.Types.ObjectId, ref: "admin" }],
 
