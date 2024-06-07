@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+const cartItemSchema = new mongoose.Schema({
+    product: { type: mongoose.Schema.Types.ObjectId, ref: "cart", required: true },
+    quantity: { type: Number, default: 1 }
+  });
+
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -25,7 +30,10 @@ const userSchema = new mongoose.Schema({
         maxLength: 10,
         unique: true,
     },
-    cart: [{ type: mongoose.Types.ObjectId, ref: "cart" }],
+    //  cart: [{ type: mongoose.Types.ObjectId, ref: "cart" },
+    //         { type: Number, default:0  } ],
+    
+    cart: [cartItemSchema]
 
 },
 { timestamps: true }

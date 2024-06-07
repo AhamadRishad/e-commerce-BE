@@ -10,7 +10,7 @@ function authenticateUser(req, res, next) {
         if(err) return res.status(403).send("Token not valid or missing");
         req.user = user;
         console.log(req.user)
-        console.log(req.user.role);
+        // console.log(req.user.role);
         next();
     })
     

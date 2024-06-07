@@ -4,6 +4,7 @@ import { generateToken } from "../utils/generateToken.js";
 
 
 
+
 export const signup = async (req,res) => {
     try {
         console.log('hitted')
@@ -78,9 +79,15 @@ export const signin = async (req,res) => {
     }
 }
 
+//LogOut its there to compleate 
+
+
+
+
 
 
 export default {
     signup,
     signin,
+    
 }
