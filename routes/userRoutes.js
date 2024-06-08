@@ -162,7 +162,38 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
     }
  })
 
+userRouter.get('/user-added-all-cart',authenticateUser , async (req,res) => {
+    try {
+        console.log("hitted to all-user-added-cart" );
+        const currentUser = req.user.data;
+        const findUser = await User.findOne({email:currentUser});
 
+        console.log("findUser :", findUser)
+
+        if (!findUser) {
+            return res.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            });
+        }
+        const userAllCart = findUser.cart;
+        res.json({
+            message: "user all carts",
+            success: true,
+            userAllCart: userAllCart, 
+            error: false
+        });
+
+
+    } catch (error) {
+         res.json({
+            message: error?.message || error,
+            error: true,
+            success: false
+        });
+    }
+})
 
 
 
