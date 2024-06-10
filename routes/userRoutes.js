@@ -227,7 +227,7 @@ userRouter.post('/delete-cart-from-user', authenticateUser, async (req, res) => 
         }
 
         // Convert productId string to ObjectId
-        const productIdObj =  new mongoose.Types.ObjectId(productId);
+        const productIdObj =  mongoose.Types.ObjectId.createFromHexString(productId);
 
         // Find the index of the product in the cart
         const index = findUser.cart.findIndex(item => item.product.equals(productIdObj));
@@ -259,9 +259,36 @@ userRouter.post('/delete-cart-from-user', authenticateUser, async (req, res) => 
 });
 
 
+userRouter.get('/search',async (req,res) => {
+    try {
+        const query = req.query.q
 
-
-
+        console.log('query :',query)
+        const regex = new RegExp(query, 'i','g');
+        const products = await Cart.find({
+            "$or": [
+                {
+                    productName:regex
+                },
+                {
+                    category:regex
+                }
+            ]
+            });
+            res.json({
+                message: "Products found",
+                success: true,
+                data: products,
+                error: false
+            })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
+    }
+})
 
 
 
