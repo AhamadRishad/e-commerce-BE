@@ -4,6 +4,7 @@ import {signup,  signin, } from "../controllers/userController.js";
 import authenticateUser from "../middlewares/user-middleware.js";
 import User from "../models/userModels.js";
 import { getCardDetails, getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
+import Cart from "../models/cartModel.js";
 
 
 const userRouter = express.Router();
@@ -105,7 +106,7 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
         if(operator === 'plus'){
             existingCartItem.quantity += 1;
         }else if(operator === 'minus'){
-                if (existingCartItem.quantity > 0) {
+                if (existingCartItem.quantity > 1) {
                 existingCartItem.quantity -= 1;
             }
         }
@@ -166,7 +167,7 @@ userRouter.get('/user-added-all-cart',authenticateUser , async (req,res) => {
     try {
         console.log("hitted to all-user-added-cart" );
         const currentUser = req.user.data;
-        const findUser = await User.findOne({email:currentUser});
+        const findUser = await User.findOne({email:currentUser})
 
         console.log("findUser :", findUser)
 
@@ -178,10 +179,19 @@ userRouter.get('/user-added-all-cart',authenticateUser , async (req,res) => {
             });
         }
         const userAllCart = findUser.cart;
+
+        const detailedCart = await Promise.all(userAllCart.map(async (item) => {
+            const productDetails = await Cart.findById(item.product);
+            return {
+                ...item.toObject(), // Ensure item is converted to a plain object
+                productDetails
+            };
+        }));
+
         res.json({
             message: "user all carts",
             success: true,
-            userAllCart: userAllCart, 
+            userAllCart: detailedCart,         
             error: false
         });
 
@@ -194,6 +204,65 @@ userRouter.get('/user-added-all-cart',authenticateUser , async (req,res) => {
         });
     }
 })
+
+
+
+
+
+
+userRouter.post('/delete-cart-from-user', authenticateUser, async (req, res) => {
+    try {
+        console.log('Hitting to delete cart from user');
+        
+        const currentUser = req.user.data;
+        const findUser = await User.findOne({ email: currentUser });
+        const { productId } = req.body;
+
+        // Check if the productId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({
+                message: "Invalid productId",
+                success: false
+            });
+        }
+
+        // Convert productId string to ObjectId
+        const productIdObj =  new mongoose.Types.ObjectId(productId);
+
+        // Find the index of the product in the cart
+        const index = findUser.cart.findIndex(item => item.product.equals(productIdObj));
+
+        if (index !== -1) {
+            // Remove the product from the cart array
+            findUser.cart.splice(index, 1);
+            await findUser.save();
+            
+            res.status(200).json({
+                message: "Product deleted from cart successfully",
+                success: true,
+                findUser: findUser
+            });
+        } else {
+            // Product not found in cart
+            res.status(404).json({
+                message: "Product not found in cart",
+                success: false
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false
+        });
+    }
+});
+
+
+
+
+
+
 
 
 
