@@ -5,6 +5,7 @@ import Cart from "../models/cartModel.js"
 
 
 // get cart
+// replace this to manager
 export const getCart = async (req, res) => {
    try {
     const carts = await Cart.find();

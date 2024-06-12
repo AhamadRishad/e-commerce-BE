@@ -291,7 +291,31 @@ userRouter.get('/search',async (req,res) => {
 })
 
 
+userRouter.post('/filter-product',async (req,res) => {
+    console.log('hitted to filter product')
+    try {
+        const categoryList = req?.body?.category || []
+        console.log(" categoryList :",categoryList)
+        const product = await Cart.find({
+            category : {
+                "$in" : categoryList
+            }
+        })
 
+        res.json({
+            message: "Products found",
+            success: true,
+            data: product,
+            error: false
+        })       
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
+    }
+})
 
 userRouter.get("/",(req,res) => {
     res.send("user route")
