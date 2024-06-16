@@ -3,6 +3,7 @@ import Admin from "../models/adminModel.js";
 export const removeAdmin = async (req, res) => {
     try {
         // its not complete the only manager can delete admin 
+        // AND IF THAT ADMIN LISTED ANY PRODUCTS DELETE THAT ALSO
         const id = req.params.id;
         console.log(id);
 
