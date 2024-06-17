@@ -17,6 +17,11 @@ const paymentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  userID:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   userAllCart: [{
     product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,8 +31,14 @@ const paymentSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true
+    },
+    adminID:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+      required: true
     }
-  }]
+  },
+]
 });
 const Payment = mongoose.model('Payment', paymentSchema);
 

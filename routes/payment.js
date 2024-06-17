@@ -5,6 +5,7 @@ import Payment from '../models/paymentModel.js';
 import razorpayInstance from '../config/payment.js';
 import authenticateUser from '../middlewares/user-middleware.js';
 import User from '../models/userModels.js';
+import Cart from '../models/cartModel.js';
 
 
 dotenv.config();
@@ -51,7 +52,20 @@ paymentRouter.post('/payment-verify',authenticateUser,async(req , res) => {
 
     const findUser = await User.findOne({email:currentUser})
     const userAllCart = findUser.cart;
+    const userID = findUser._id;
+    console.log("userID :",userID);
     console.log("userAllCart :",userAllCart)
+
+      {/**adding admin id for each product after searching product id  */}
+      const updatedCart = await Promise.all(userAllCart.map(async (item) => {
+        const product = await Cart.findById(item.product);
+        return {
+            ...item,
+            adminID: product.admin[0] 
+        };
+    }));
+
+
 
    
         const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -74,7 +88,8 @@ paymentRouter.post('/payment-verify',authenticateUser,async(req , res) => {
                  razorpay_order_id,
                  razorpay_payment_id,
                  razorpay_signature,
-                 userAllCart
+                 userAllCart:updatedCart,
+                 userID,
              })
 
              await payment.save();
