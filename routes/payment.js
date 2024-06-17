@@ -6,6 +6,7 @@ import razorpayInstance from '../config/payment.js';
 import authenticateUser from '../middlewares/user-middleware.js';
 import User from '../models/userModels.js';
 import Cart from '../models/cartModel.js';
+import { error } from 'console';
 
 
 dotenv.config();
@@ -120,6 +121,77 @@ paymentRouter.post('/payment-verify',authenticateUser,async(req , res) => {
     }
 })
 
+
+{/**Order Details */}
+ paymentRouter.get('/order-details',authenticateUser,async(req,res) => {
+    try {
+        console.log("hitted to order-details ");
+
+        const currentUser =  req.user.data
+
+        const findUser = await User.findOne({email:currentUser})
+        const userID = findUser._id
+
+        const orders = await Payment.find({userID:userID}).sort({createdAt : -1})
+
+          // Fetch detailed product information for each order
+        //   const detailedOrders = await Promise.all(orders.map(async (order) => {
+        //     const detailedCart = await Promise.all(order.userAllCart.map(async (cartItem) => {
+        //         const productDetails = await Cart.findById(cartItem.product);
+        //         return {
+        //             ...cartItem,
+        //             productDetails,
+        //         };
+        //     }));
+        //     return {
+        //         // ...order._doc,
+        //         userAllCart: detailedCart,
+        //     };
+        // }));
+
+
+        const detailedOrders = await Promise.all(orders.map(async (order) => {
+            const detailedCart = await Promise.all(order.userAllCart.map(async (cartItem) => {
+                const productDetails = await Cart.findById(cartItem.product).lean();
+                return {
+                    product: cartItem.product,
+                    quantity: cartItem.quantity,
+                    adminID: cartItem.adminID,
+                    productDetails,
+                };
+            }));
+
+             // Fetch payment details from Razorpay
+             const paymentDetails = await razorpayInstance.payments.fetch(order.razorpay_payment_id);
+            return {
+                _id: order._id,
+                razorpay_order_id: order.razorpay_order_id,
+                razorpay_payment_id: order.razorpay_payment_id,
+                razorpay_signature: order.razorpay_signature,
+                date: order.date,
+                userAllCart: detailedCart,
+                paymentDetails,
+            };
+        }));
+
+        console.log('detailedOrders :', detailedOrders);
+
+
+        console.log('orders :' , orders)
+        res.status(200).json({
+            message:"success",
+            error:false,
+            success:true,
+            data:detailedOrders
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false,
+        })
+    }
+ })
 
 export default paymentRouter;
 
