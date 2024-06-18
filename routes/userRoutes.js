@@ -317,9 +317,62 @@ userRouter.post('/filter-product',async (req,res) => {
     }
 })
 
+userRouter.get('/check-manager' ,authenticateUser,async (req,res) => {
+    try {
+        console.log('hitted to check-manager');
+        console.log('hitted to check-manager');
+        console.log('hitted to check-manager');
+        console.log('hitted to check-manager');
+        console.log('hitted to check-manager');
+
+        const currentUser = req.user.data;
+        const findUser = await User.findOne({email : currentUser});
+        console.log('findUser',findUser)
+        console.log('findUser role ::',findUser.role)
+
+
+        if(findUser.role === 'manager'){
+            const role = 'manager';
+            return res.status(200).json({
+                message: "User found",
+                success: true,
+                data: role,
+                error: false
+                
+            })
+
+        }else{
+            const role = 'general';
+            return res.status(200).json({
+                message: "User found",
+                success: true,
+                data: role,
+                error: false
+            })
+    
+        }
+
+      
+       
+
+   
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false
+        });
+    }
+})
+
+
+
+
 userRouter.get("/",(req,res) => {
     res.send("user route")
 });
+
+
 
 
 userRouter.post('/signup', signup );

@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
         maxLength: 10,
         unique: true,
     },
+    role: {
+        type:String,
+        enum:['general','manager']
+    },
     //  cart: [{ type: mongoose.Types.ObjectId, ref: "cart" },
     //         { type: Number, default:0  } ],
     
