@@ -26,7 +26,8 @@ export const signup = async (req,res) => {
             email,
             name,
             mobile,
-            hashPassword
+            hashPassword,
+            role:"general"
         })
         const newUserCreated = await newUser.save();
 
