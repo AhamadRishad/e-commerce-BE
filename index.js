@@ -17,12 +17,33 @@ app.use(express.json())
 app.use(cookieParser());
 
 // app.use(cors());
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "http://localhost:5173", // Your localhost URL
+  "https://e-commerce-fe-green.vercel.app" // Your deployed frontend URL
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: function(origin, callback) {
+      // Check if the origin is in the allowed origins list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
   })
 );
+
+
 app.use('/api/v1/user',userRouter);
 app.use('/api/v1/admin',adminRouter);
 app.use('/api/v1/manager',managerRouter);
