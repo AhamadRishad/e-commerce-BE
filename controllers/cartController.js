@@ -60,6 +60,7 @@ export const addCart = async (req, res) => {
             if(!findAdmin){
                 return res.status(400).send('admin is not exist');
             }
+            const STATUS = 'inactive'
                
             const createCart = new Cart({
                 productName,
@@ -68,6 +69,7 @@ export const addCart = async (req, res) => {
                 sellingPrice,
                 category,
                 description,
+                STATUS,
                 admin: findAdmin._id,
                 image: imageUrl
             })
@@ -139,7 +141,7 @@ export const getCategoryWiseProducts = async (req, res) => {
       }
   
       // Find products by category
-      const products = await Cart.find({ category });
+      const products = await Cart.find({ category ,STATUS:"active"});
   
       // console.log(products);
   

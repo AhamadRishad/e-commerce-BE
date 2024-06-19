@@ -259,28 +259,62 @@ userRouter.post('/delete-cart-from-user', authenticateUser, async (req, res) => 
 });
 
 
-userRouter.get('/search',async (req,res) => {
-    try {
-        const query = req.query.q
+// userRouter.get('/search',async (req,res) => {
+//     try {
+//         const query = req.query.q
 
-        console.log('query :',query)
-        const regex = new RegExp(query, 'i','g');
+//         console.log('query :',query)
+//         const regex = new RegExp(query, 'i','g');
+//         const products = await Cart.find({
+//             "$or": [
+//                 {
+//                     productName:regex
+//                 },
+//                 {
+//                     category:regex
+//                 }
+//             ]
+//             });
+//             res.json({
+//                 message: "Products found",
+//                 success: true,
+//                 data: products,
+//                 error: false
+//             })
+//     } catch (error) {
+//         res.status(500).json({
+//             message: error.message || error,
+//             error: true,
+//             success: false
+//         });
+//     }
+// })
+
+
+
+userRouter.get('/search', async (req, res) => {
+    try {
+        const query = req.query.q;
+        const regex = new RegExp(query, 'i', 'g');
+
         const products = await Cart.find({
-            "$or": [
+            "$and": [
                 {
-                    productName:regex
+                    "$or": [
+                        { productName: regex },
+                        { category: regex }
+                    ]
                 },
-                {
-                    category:regex
-                }
+                { STATUS: 'active' }  // Only include active products
             ]
-            });
-            res.json({
-                message: "Products found",
-                success: true,
-                data: products,
-                error: false
-            })
+        });
+
+        res.json({
+            message: "Products found",
+            success: true,
+            data: products,
+            error: false
+        });
     } catch (error) {
         res.status(500).json({
             message: error.message || error,
@@ -288,7 +322,8 @@ userRouter.get('/search',async (req,res) => {
             success: false
         });
     }
-})
+});
+
 
 
 userRouter.post('/filter-product',async (req,res) => {
@@ -299,7 +334,8 @@ userRouter.post('/filter-product',async (req,res) => {
         const product = await Cart.find({
             category : {
                 "$in" : categoryList
-            }
+            },
+            STATUS: "active" // Add this condition to filter active products
         })
 
         res.json({

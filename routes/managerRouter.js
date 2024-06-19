@@ -140,55 +140,6 @@ managerRouter.get('/all-users',authenticateUser,async(req,res)=> {
 })
 
 
-// managerRouter.get('/all-orders',authenticateUser,async(req,res) => {
-//     try {
-//         console.log('hitted all orders API')
-
-//         const currentUser = req.user.data;
-
-//         const findUser = await User.findOne({ email: currentUser });
-
-//         if (!findUser) {
-//             return res.status(404).json({
-//                 message: "User not found",
-//                 error: true,
-//                 success: false,
-//                 data: null
-//             });
-//         }
-
-//         const role = findUser.role;
-
-//         if (role !== 'manager') {
-//             return res.status(403).json({
-//                 message: "You are not authorized to access this route",
-//                 error: true,
-//                 success: false,
-//                 data: null
-//             });
-//         }
-//         const allOrder = await Payment.find()
-//         console.log("allOrder:",allOrder)
-
-//         res.status(200).json({
-//             message: "manager found : here is all admin details",
-//             error: false,
-//             success: true,
-//             data: allOrder
-//         });
-
-
-
-
-
-
-        
-//     } catch (error) {
-        
-//     }
-// })
-
-
 managerRouter.get('/all-orders', authenticateUser, async (req, res) => {
     try {
         console.log('hitted all orders API')
@@ -254,8 +205,269 @@ managerRouter.get('/all-orders', authenticateUser, async (req, res) => {
 });
 
 
+managerRouter.get('/verify-product',authenticateUser,async (req,res) =>{
+    try {
+        console.log('hitted to manager verify product');
+
+        const currentUser = req.user.data;
+        const findUser = await User.findOne({ email: currentUser });
+
+        if (!findUser) {
+            return res.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false,
+                data: null
+            });
+        }
+
+        const role = findUser.role;
+
+        if (role !== 'manager') {
+            return res.status(403).json({
+                message: "You are not authorized to access this route",
+                error: true,
+                success: false,
+                data: null
+            });
+        }
+        // const findAllProduct = await Cart.find();
+        // console.log("findAllProduct STATUS::",findAllProduct.STATUS)
+        // // const verify = findAllProduct.STATUS  
+
+
+        const inactiveProducts = await Cart.find({ STATUS: "inactive" });
+
+        if (inactiveProducts.length === 0) {
+            return res.status(404).json({
+              message: "No inactive products found",
+              error: true,
+              success: false,
+              data: null
+            });
+          }
+      
+
+        res.status(200).json({
+            message: "manager found : here is all admin details",
+            error: false,
+            success: true,
+            data: inactiveProducts
+        });
+
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false
+        });
+    }
+})
+
+
+
+// managerRouter.post('/active-product',authenticateUser, async (req, res) => {
+//     try {
+//       console.log('hitted to active product');
+  
+//       const currentUser = req.user.data;
+//       const findUser = await User.findOne({ email: currentUser });
+  
+//       if (!findUser) {
+//         return res.status(404).json({
+//           message: "User not found",
+//           error: true,
+//           success: false,
+//           data: null
+//         });
+//       }
+  
+//       const role = findUser.role;
+  
+//       if (role !== 'manager') {
+//         return res.status(403).json({
+//           message: "You are not authorized to access this route",
+//           error: true,
+//           success: false,
+//           data: null
+//         });
+//       }
+  
+//       const { productID } = req.body;
+//       console.log("productID::",productID)
+      
+//       if (!productID) {
+//         return res.status(400).json({
+//           message: "Product ID is required",
+//           error: true,
+//           success: false,
+//           data: null
+//         });
+//       }
+  
+//       const findProduct = await Cart.findById(productID);
+  
+//       if (!findProduct) {
+//         return res.status(404).json({
+//           message: "Product not found",
+//           error: true,
+//           success: false,
+//           data: null
+//         });
+//       }
+  
+//       if (findProduct.STATUS === 'inactive') {
+//         findProduct.STATUS = 'active';
+//         await findProduct.save();
+//         return res.status(200).json({
+//           message: "Product status updated to active",
+//           error: false,
+//           success: true,
+//           data: findProduct
+//         });
+//       } else {
+//         return res.status(400).json({
+//           message: "Product is already active",
+//           error: true,
+//           success: false,
+//           data: findProduct
+//         });
+//       }
+  
+//     } catch (error) {
+//       console.error("Error:", error);
+//       res.status(500).json({
+//         message: error.message || "Internal Server Error",
+//         error: true,
+//         success: false
+//       });
+//     }
+//   });
+  
+
+
+
+managerRouter.post('/active-product', authenticateUser, async (req, res) => {
+    try {
+      console.log('hitted to active product');
+  
+      const currentUser = req.user.data;
+      const findUser = await User.findOne({ email: currentUser });
+  
+      if (!findUser) {
+        return res.status(404).json({
+          message: "User not found",
+          error: true,
+          success: false,
+          data: null
+        });
+      }
+  
+      const role = findUser.role;
+  
+      if (role !== 'manager') {
+        return res.status(403).json({
+          message: "You are not authorized to access this route",
+          error: true,
+          success: false,
+          data: null
+        });
+      }
+  
+      const { productID, status } = req.body;
+      console.log("productID::", productID, "status::", status);
+  
+      if (!productID || !status) {
+        return res.status(400).json({
+          message: "Product ID and status are required",
+          error: true,
+          success: false,
+          data: null
+        });
+      }
+  
+      const findProduct = await Cart.findById(productID);
+  
+      if (!findProduct) {
+        return res.status(404).json({
+          message: "Product not found",
+          error: true,
+          success: false,
+          data: null
+        });
+      }
+  
+      if (status === 'active') {
+        if (findProduct.STATUS === 'active') {
+          return res.status(400).json({
+            message: "Product is already active",
+            error: true,
+            success: false,
+            data: findProduct
+          });
+        }
+        findProduct.STATUS = 'active';
+        await findProduct.save();
+        return res.status(200).json({
+          message: "Product status updated to active",
+          error: false,
+          success: true,
+          data: findProduct
+        });
+      } else if (status === 'inactive') {
+        if (findProduct.STATUS === 'inactive') {
+            console.log("Product is already inactive")
+          return res.status(400).json({
+            message: "Product is already inactive",
+            error: true,
+            success: false,
+            data: findProduct
+          });
+        }
+        findProduct.STATUS = 'inactive';
+        await findProduct.save();
+        console.log("Product status updated to inactive")
+        return res.status(200).json({
+          message: "Product status updated to inactive",
+          error: false,
+          success: true,
+          data: findProduct
+        });
+      } else if (status === 'ignore') {
+        await Cart.deleteOne({ _id: productID });
+         console.log("Product has been deleted")
+        return res.status(200).json({
+          message: "Product has been deleted",
+          error: false,
+          success: true,
+          data: null
+        });
+      } else {
+        return res.status(400).json({
+          message: "Invalid status value",
+          error: true,
+          success: false,
+          data: null
+        });
+      }
+  
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({
+        message: error.message || "Internal Server Error",
+        error: true,
+        success: false
+      });
+    }
+  });
+  
+
 
 
 
 
 export default managerRouter;
+
+
+

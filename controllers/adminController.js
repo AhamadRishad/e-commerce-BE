@@ -86,12 +86,13 @@ export const updateProduct = async (req, res) => {
         console.log("hittted to update produt")
         const id = req.params.id;
         console.log(id);
+        const STATUS = 'inactive'
 
         const {description, price, productName, brandName, category,sellingPrice } = req.body;
         console.log('req.body :',req.body);
         const updatedProduct = await Cart.findOneAndUpdate(
           { _id: id },
-          { description, price, productName, brandName ,category,sellingPrice },
+          { description, price, productName, brandName ,category,sellingPrice,STATUS },
           {
             new: true,
           }
