@@ -39,7 +39,11 @@ export const signup = async (req,res) => {
         // }
 
         const token = generateToken(email);
-        res.cookie('token',token);
+        res.cookie('token',token,{
+            httpOnly: true,
+            secure: true, // Ensure to use secure in production
+            sameSite: 'None', // Necessary for cross-domain cookies
+        });
         res.status(201).send('signed successfully');
     } catch (error) {
         console.log(error, "Something wrong");
@@ -70,7 +74,11 @@ export const signin = async (req,res) => {
         // }
 
         const token = generateToken(email);
-        res.cookie('token',token);
+        res.cookie('token',token,{
+            httpOnly: true,
+            secure: true, // Ensure to use secure in production
+            sameSite: 'None', // Necessary for cross-domain cookies
+        });
         // res.status(201).send('Logged in');
         res.json({ message: "signup successfully", token });
             

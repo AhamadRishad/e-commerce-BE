@@ -22,6 +22,21 @@ const paymentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  review:[{
+   review: {
+    type:mongoose.Schema.Types.ObjectId,
+    ref: 'Review',
+   },
+   userEmail: {
+    type:String
+   },
+   productID:{
+    type:String
+   },
+   text:{
+    type:String
+   }
+  }],
   userAllCart: [{
     product: {
         type: mongoose.Schema.Types.ObjectId,

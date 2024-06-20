@@ -37,7 +37,11 @@ export const signup = async (req, res) => {
         }
 
         const AdminToken = generateAdminToken(savedAdmin);
-        res.cookie("AdminToken",AdminToken);
+        res.cookie("AdminToken",AdminToken,{
+            httpOnly: true,
+            secure: true, // Ensure to use secure in production
+            sameSite: 'None', // Necessary for cross-domain cookies
+        });
         res.json({
             message:"signed in ! " , AdminToken
         });
@@ -69,7 +73,11 @@ export const login = async (req,res) => {
 
         const AdminToken = generateAdminToken(admin);
         
-        res.cookie("AdminToken",AdminToken);
+        res.cookie("AdminToken",AdminToken,{
+            httpOnly: true,
+            secure: true, // Ensure to use secure in production
+            sameSite: 'None', // Necessary for cross-domain cookies
+        });
         res.json({
             message:"Logged in !",
             AdminToken

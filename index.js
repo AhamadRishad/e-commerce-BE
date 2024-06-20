@@ -19,29 +19,63 @@ app.use(cookieParser());
 // app.use(cors());
 // app.use(
 //   cors({
-//     origin: "http://localhost:5173",
+//     origin: 
+//     // "http://localhost:5173",
+//     "https://e-commerce-f6fmwi9yt-ahamad-rishads-projects.vercel.app/",
 //     credentials: true,
 //   })
 // );
 
+// const allowedOrigins = [
+//   "http://localhost:5173", // Your localhost URL
+//   // "https://e-commerce-fe-green.vercel.app" // Your deployed frontend URL
+//   "https://e-commerce-f6fmwi9yt-ahamad-rishads-projects.vercel.app/"
+// ];
+
+// app.use(
+//   cors({
+//     origin: function(origin, callback) {
+//       // Check if the origin is in the allowed origins list
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     credentials: true
+//   })
+// );
+
+
+// const corsOptions = {
+//   origin: 'https://e-commerce-fe-green.vercel.app', // Your Vercel frontend URL
+//   credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
+//   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
+
+// app.use(cors(corsOptions));
+
 const allowedOrigins = [
-  "http://localhost:5173", // Your localhost URL
-  "https://e-commerce-fe-green.vercel.app" // Your deployed frontend URL
+  'http://localhost:5173', // Local development URL
+  'https://e-commerce-fe-green.vercel.app' // Your Vercel hosted frontend URL
 ];
 
-app.use(
-  cors({
-    origin: function(origin, callback) {
-      // Check if the origin is in the allowed origins list
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowed origins array
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
+  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
+
+
 
 
 app.use('/api/v1/user',userRouter);

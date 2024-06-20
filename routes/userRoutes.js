@@ -5,6 +5,7 @@ import authenticateUser from "../middlewares/user-middleware.js";
 import User from "../models/userModels.js";
 import { getCardDetails, getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
 import Cart from "../models/cartModel.js";
+import Payment from "../models/paymentModel.js";
 
 
 const userRouter = express.Router();
@@ -14,8 +15,13 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
     const user = req.user;
 
     console.log("data",user.data);
+    console.log("data",user.data);
+    console.log("data",user.data);
+    console.log("data",user.data);
+    console.log("data",user.data);
+    console.log("data",user.data);
     const findUser = await User.findOne({email: user.data});
-    console.log(findUser);
+    // console.log(findUser);
     if(!findUser){
         return res.json({message:"authentication failed", success:false})
     }
@@ -133,7 +139,7 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
     try {
         console.log('hitted to quantity count');
         const currentUser = req.user.data;
-        console.log("currentUser  :",currentUser)
+        // console.log("currentUser  :",currentUser)
         const findUser = await User.findOne({ email: currentUser });
         console.log("findUser :", findUser)
         if (!findUser) {
@@ -163,50 +169,51 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
     }
  })
 
-userRouter.get('/user-added-all-cart',authenticateUser , async (req,res) => {
+
+
+
+userRouter.get('/user-added-all-cart', authenticateUser, async (req, res) => {
+    console.log('Endpoint hit: /user-added-all-cart');
     try {
-        console.log("hitted to all-user-added-cart" );
-        const currentUser = req.user.data;
-        const findUser = await User.findOne({email:currentUser})
-
-        console.log("findUser :", findUser)
-
-        if (!findUser) {
-            return res.status(404).json({
-                message: "User not found",
-                error: true,
-                success: false
-            });
-        }
-        const userAllCart = findUser.cart;
-
-        const detailedCart = await Promise.all(userAllCart.map(async (item) => {
-            const productDetails = await Cart.findById(item.product);
-            return {
-                ...item.toObject(), // Ensure item is converted to a plain object
-                productDetails
-            };
-        }));
-
-        res.json({
-            message: "user all carts",
-            success: true,
-            userAllCart: detailedCart,         
-            error: false
+      console.log("Fetching user's cart");
+      const currentUser = req.user.data;
+      const findUser = await User.findOne({ email: currentUser });
+  
+      if (!findUser) {
+        return res.status(404).json({
+          message: "User not found",
+          error: true,
+          success: false
         });
-
-
+      }
+      
+      const userAllCart = findUser.cart;
+  
+      const detailedCart = await Promise.all(userAllCart.map(async (item) => {
+        const productDetails = await Cart.findById(item.product);
+        return {
+          ...item.toObject(), // Ensure item is converted to a plain object
+          productDetails
+        };
+      }));
+  
+      res.json({
+        message: "User's all carts",
+        success: true,
+        userAllCart: detailedCart,
+        error: false
+      });
+  
     } catch (error) {
-         res.json({
-            message: error?.message || error,
-            error: true,
-            success: false
-        });
+      console.error('Error occurred:', error); // Log the error to see it in the server logs
+      res.status(500).json({
+        message: error?.message || error,
+        error: true,
+        success: false
+      });
     }
-})
-
-
-
+  });
+  
 
 
 
@@ -258,37 +265,6 @@ userRouter.post('/delete-cart-from-user', authenticateUser, async (req, res) => 
     }
 });
 
-
-// userRouter.get('/search',async (req,res) => {
-//     try {
-//         const query = req.query.q
-
-//         console.log('query :',query)
-//         const regex = new RegExp(query, 'i','g');
-//         const products = await Cart.find({
-//             "$or": [
-//                 {
-//                     productName:regex
-//                 },
-//                 {
-//                     category:regex
-//                 }
-//             ]
-//             });
-//             res.json({
-//                 message: "Products found",
-//                 success: true,
-//                 data: products,
-//                 error: false
-//             })
-//     } catch (error) {
-//         res.status(500).json({
-//             message: error.message || error,
-//             error: true,
-//             success: false
-//         });
-//     }
-// })
 
 
 
@@ -356,10 +332,6 @@ userRouter.post('/filter-product',async (req,res) => {
 userRouter.get('/check-manager' ,authenticateUser,async (req,res) => {
     try {
         console.log('hitted to check-manager');
-        console.log('hitted to check-manager');
-        console.log('hitted to check-manager');
-        console.log('hitted to check-manager');
-        console.log('hitted to check-manager');
 
         const currentUser = req.user.data;
         const findUser = await User.findOne({email : currentUser});
@@ -401,7 +373,49 @@ userRouter.get('/check-manager' ,authenticateUser,async (req,res) => {
     }
 })
 
+userRouter.post('/add-review',authenticateUser,async(req,res)=> {
+    const {productID,reviewText,paymentID} = req.body;
+    try {
+      
+        console.log("hitted");
+        // const findUser = await User.findOne({email : currentUser});
+        // console.log('findUser',findUser)
+        const currentUser = req.user.data; // its coming form authenticateUser decrypting from token
+        console.log("hitted");
 
+       // Find the payment by paymentId
+    const payment = await Payment.findById(paymentID);
+
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+     
+    payment.review.push({
+        review: new mongoose.Types.ObjectId(), // or create a new Review document and reference its ID here
+        userEmail: currentUser,
+        productID: productID,
+        text: reviewText
+    });
+
+    // Save the updated payment document
+    await payment.save();
+
+          res.status(200).json({
+            message: "Review added successfully",
+            success: true,
+            data: payment.review,
+            error: false
+          })
+
+    } catch (error) {
+        res.json({
+            message: error.message || "Internal Server Error",
+             error: true,
+             success: false
+          
+        })
+    }
+})
 
 
 userRouter.get("/",(req,res) => {
