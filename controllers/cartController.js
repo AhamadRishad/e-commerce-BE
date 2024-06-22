@@ -2,6 +2,7 @@ import express from "express";
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import Admin from "../models/adminModel.js";
 import Cart from "../models/cartModel.js"
+import Payment from "../models/paymentModel.js";
 
 
 // get cart
@@ -47,15 +48,6 @@ export const addCart = async (req, res) => {
             }
 
             let findAdmin = await Admin.findOne({email: adminEmail});
-            // const adminDetail = await Admin.find(body.adminEmail)
-            // console.log("findAdmin :",findAdmin);
-            // console.log("adminDetail",adminDetail);
-
-            // if (!findAdmin) {
-            //     console.log(`Admin not found with findOne, trying find...`);
-            //     const admins = await Admin.find({ email: adminEmail });
-            //     // findAdmin = admins.length > 0 ? admins[0] : null;
-            // }
 
             if(!findAdmin){
                 return res.status(400).send('admin is not exist');
@@ -192,10 +184,69 @@ export const getCategoryWiseProducts = async (req, res) => {
     }
   }
 
+
+
+
+
+export const displayReview = async (req, res) => {
+  try {
+    console.log("hitted to displayReview");
+    const { productId } = req.body;
+console.log("productId",productId)
+   
+    const paymentDetails = await Payment.find();
+
+    let reviewPromises = [];
+
+  
+    for (const payment of paymentDetails) {
+  
+      if (payment.review && payment.review.length > 0) {
+    
+        for (const review of payment.review) {
+
+          if (review.productID === productId) {
+
+            reviewPromises.push((async () => {
+              const productDetails = await Cart.findById(review.productID);
+              return { review, productDetails };
+            })());
+          }
+        }
+      }
+    }
+
+    const reviewsFound = await Promise.all(reviewPromises);
+console.log("reviewsFound :" ,reviewsFound )
+    if (reviewsFound.length > 0) {
+      res.json({
+        message: "Reviews found",
+        reviews: reviewsFound,
+        error: false,
+        success: true
+      });
+    } else {
+      res.json({
+        message: "No reviews found for the given product ID",
+        error: false,
+        success: false
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error.message || error,
+      error: true,
+      success: false
+    });
+  }
+};
+
+
 export default {
     getCart,
     addCart,
     getCategoryOneProduct,
     getCategoryWiseProducts,
-    getCardDetails
+    getCardDetails,
+    displayReview
 }

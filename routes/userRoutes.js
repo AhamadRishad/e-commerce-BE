@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import {signup,  signin, } from "../controllers/userController.js";
 import authenticateUser from "../middlewares/user-middleware.js";
 import User from "../models/userModels.js";
-import { getCardDetails, getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
+import { displayReview, getCardDetails, getCategoryOneProduct, getCategoryWiseProducts } from "../controllers/cartController.js";
 import Cart from "../models/cartModel.js";
 import Payment from "../models/paymentModel.js";
 
@@ -120,7 +120,7 @@ userRouter.get("/check-user", authenticateUser, async (req, res) => {
         const saveUser = await findUser.save();
 
         res.json({
-            message: "Product increaced or decreased",
+            message: "Product increased or decreased",
             success: true,
             data: saveUser,
             error: false
@@ -377,7 +377,10 @@ userRouter.post('/add-review',authenticateUser,async(req,res)=> {
     const {productID,reviewText,paymentID} = req.body;
     try {
       
-        console.log("hitted");
+        console.log("hitted to add review");
+        console.log("productID :",productID)
+        console.log("reviewText :",reviewText)
+        console.log("paymentID :",paymentID)
         // const findUser = await User.findOne({email : currentUser});
         // console.log('findUser',findUser)
         const currentUser = req.user.data; // its coming form authenticateUser decrypting from token
@@ -430,6 +433,7 @@ userRouter.post('/signin', signin );
 userRouter.get('/all-single-category',getCategoryOneProduct);
 userRouter.post('/category-wise-products',getCategoryWiseProducts);
 userRouter.post('/get-Card-details',getCardDetails)
+userRouter.post('/display-review',displayReview)
 // userRouter.post('/add-to-cart',addToCartController);
 
 export default userRouter;

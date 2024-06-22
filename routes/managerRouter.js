@@ -13,40 +13,7 @@ const managerRouter = express.Router();
 managerRouter.delete("/delete-admin/:id",removeAdmin)
 managerRouter.get("/get-admins",getAllAdmins)
 
-// managerRouter.get('/all-Admins',authenticateUser,async(req,res) =>{
-//     try {
-//         console.log("hitted to add admins ");
-//         const currentUser = req.user.data;
-//         const findUser = await User.findOne({email:currentUser});
-//         const role = findUser.role
 
-
-
-//         if(role !== 'manager'){
-//             res.json({
-//                 message: "You are not authorized to access this route",
-//                 error: true,
-//                 success: false,
-//                 data: null
-//             })
-//         }
-
-
-//         const admins = await Admin.find();
-//         res.status(200).json({
-//             message: "Admins found",
-//             error: false,
-//             success: true,
-//             data: admins
-//         })
-//     } catch (error) {
-//         res.status(500).json({
-//             message: error.message || "Internal Server Error",
-//             error: true,
-//             success: false
-//         });
-//     }
-// })
 
 
 
@@ -267,86 +234,6 @@ managerRouter.get('/verify-product',authenticateUser,async (req,res) =>{
 
 
 
-// managerRouter.post('/active-product',authenticateUser, async (req, res) => {
-//     try {
-//       console.log('hitted to active product');
-  
-//       const currentUser = req.user.data;
-//       const findUser = await User.findOne({ email: currentUser });
-  
-//       if (!findUser) {
-//         return res.status(404).json({
-//           message: "User not found",
-//           error: true,
-//           success: false,
-//           data: null
-//         });
-//       }
-  
-//       const role = findUser.role;
-  
-//       if (role !== 'manager') {
-//         return res.status(403).json({
-//           message: "You are not authorized to access this route",
-//           error: true,
-//           success: false,
-//           data: null
-//         });
-//       }
-  
-//       const { productID } = req.body;
-//       console.log("productID::",productID)
-      
-//       if (!productID) {
-//         return res.status(400).json({
-//           message: "Product ID is required",
-//           error: true,
-//           success: false,
-//           data: null
-//         });
-//       }
-  
-//       const findProduct = await Cart.findById(productID);
-  
-//       if (!findProduct) {
-//         return res.status(404).json({
-//           message: "Product not found",
-//           error: true,
-//           success: false,
-//           data: null
-//         });
-//       }
-  
-//       if (findProduct.STATUS === 'inactive') {
-//         findProduct.STATUS = 'active';
-//         await findProduct.save();
-//         return res.status(200).json({
-//           message: "Product status updated to active",
-//           error: false,
-//           success: true,
-//           data: findProduct
-//         });
-//       } else {
-//         return res.status(400).json({
-//           message: "Product is already active",
-//           error: true,
-//           success: false,
-//           data: findProduct
-//         });
-//       }
-  
-//     } catch (error) {
-//       console.error("Error:", error);
-//       res.status(500).json({
-//         message: error.message || "Internal Server Error",
-//         error: true,
-//         success: false
-//       });
-//     }
-//   });
-  
-
-
 
 managerRouter.post('/active-product', authenticateUser, async (req, res) => {
     try {
@@ -434,16 +321,18 @@ managerRouter.post('/active-product', authenticateUser, async (req, res) => {
           success: true,
           data: findProduct
         });
-      } else if (status === 'ignore') {
-        await Cart.deleteOne({ _id: productID });
-         console.log("Product has been deleted")
-        return res.status(200).json({
-          message: "Product has been deleted",
-          error: false,
-          success: true,
-          data: null
-        });
-      } else {
+      }
+      //  else if (status === 'ignore') {
+      //   await Cart.deleteOne({ _id: productID });
+      //    console.log("Product has been deleted")
+      //   return res.status(200).json({
+      //     message: "Product has been ignored",
+      //     error: false,
+      //     success: true,
+      //     data: null
+      //   });
+      // }
+       else {
         return res.status(400).json({
           message: "Invalid status value",
           error: true,
