@@ -15,9 +15,17 @@ export const signup = async (req,res) => {
 
         const userExist = await User.findOne({email});
 
-        if(userExist){
-            return res.send('user is already exist');
-        }
+        // if(userExist){
+        //     return res.send('user is already exist');
+        // }
+        if (userExist) {
+            return res.status(400).json({
+              message: "user is already exist",
+              error: true,
+              success: false,
+              data: null
+            });
+          }
 
         const saltRounds = 10;
         const hashPassword = await bcrypt.hash(password,saltRounds);
@@ -31,12 +39,23 @@ export const signup = async (req,res) => {
         })
         const newUserCreated = await newUser.save();
 
-        if(!newUserCreated){
-            return res.status(400).send('user is not created');
-        }
+
+
+        // if(!newUserCreated){
+        //     return res.status(400).send('user is not created');
+        // }
         // else{
         //     res.send('signed successfully')
         // }
+
+        if (!newUserCreated) {
+            return res.status(400).json({
+                message: "your signup is not created try again",
+                success: false,
+                error: true,
+                data: null
+            });
+        }
 
         const token = generateToken(email);
         res.cookie('token',token,{
@@ -46,7 +65,7 @@ export const signup = async (req,res) => {
         });
         res.status(201).json({
             message:"signup successfully",
-
+            success: true,
             
         });
     } catch (error) {
@@ -98,7 +117,7 @@ export const signin = async (req,res) => {
             sameSite: 'None', // Necessary for cross-domain cookies
         });
         // res.status(201).send('Logged in');
-        res.json({ message: "signup successfully", token });
+        res.json({ message: "signup successfully",success:true , token });
             
     } catch (error) {
         console.log(error, "Something wrong");

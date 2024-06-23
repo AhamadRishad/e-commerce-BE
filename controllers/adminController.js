@@ -35,8 +35,16 @@ export const signup = async (req, res) => {
         })
         const savedAdmin = await newAdmin.save();
 
-        if(!savedAdmin) {
-            return res.send("Admin is not created something went wrong")
+        // if(!savedAdmin) {
+        //     return res.send("Admin is not created something went wrong")
+        // }
+        if(!savedAdmin){
+            return res.status(400).json({
+                message:"seller is not created something went wrong",
+                success:false,
+                error:true,
+                data:null
+            })
         }
 
         const AdminToken = generateAdminToken(savedAdmin);
@@ -45,7 +53,7 @@ export const signup = async (req, res) => {
             secure: true, // Ensure to use secure in production
             sameSite: 'None', // Necessary for cross-domain cookies
         });
-        res.json({
+        res.status(201).json({
             message:"signed in ! " , AdminToken
         });
             
@@ -53,7 +61,12 @@ export const signup = async (req, res) => {
 
     } catch (error) {
         console.log(error, "Something wrong");
-        res.status(500).send("Internal Server Error");
+        // res.status(500).send("Internal Server Error");
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false,
+        })
     }
 }
 
@@ -93,12 +106,18 @@ export const login = async (req,res) => {
         });
         res.json({
             message:"Logged in !",
-            AdminToken
+            AdminToken,
+            success:true
         });   
 
     } catch (error) {
         console.log(error, "Something wrong");
-        res.status(500).send("Internal Server Error");
+        // res.status(500).send("Internal Server Error");
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false,
+        })
     }
 }
 
