@@ -322,16 +322,16 @@ managerRouter.post('/active-product', authenticateUser, async (req, res) => {
           data: findProduct
         });
       }
-      //  else if (status === 'ignore') {
-      //   await Cart.deleteOne({ _id: productID });
-      //    console.log("Product has been deleted")
-      //   return res.status(200).json({
-      //     message: "Product has been ignored",
-      //     error: false,
-      //     success: true,
-      //     data: null
-      //   });
-      // }
+       else if (status === 'ignore') {
+        await Cart.deleteOne({ _id: productID });
+         console.log("Product has been deleted")
+        return res.status(200).json({
+          message: "Product has been ignored",
+          error: false,
+          success: true,
+          data: null
+        });
+      }
        else {
         return res.status(400).json({
           message: "Invalid status value",

@@ -16,11 +16,11 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser());
 
-app.use(cors({
-  origin:'https://e-commerce-fe-green.vercel.app',
-  credentials: true,
-  optionsSuccessStatus: 200, 
-}))
+// app.use(cors({
+//   origin:'https://e-commerce-fe-green.vercel.app',
+//   credentials: true,
+//   optionsSuccessStatus: 200, 
+// }))
 // app.use(cors());
 // app.use(
 //   cors({
@@ -60,25 +60,25 @@ app.use(cors({
 
 // app.use(cors(corsOptions));
 
-// const allowedOrigins = [
-//   'http://localhost:5173', // Local development URL
-//   'https://e-commerce-fe-green.vercel.app' // Your Vercel hosted frontend URL
-// ];
+const allowedOrigins = [
+  'http://localhost:5173', // Local development URL
+  'https://e-commerce-fe-green.vercel.app' // Your Vercel hosted frontend URL
+];
 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     // Check if the origin is in the allowed origins array
-//     if (allowedOrigins.includes(origin) || !origin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
-//   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowed origins array
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
+  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 
 

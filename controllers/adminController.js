@@ -14,7 +14,10 @@ export const signup = async (req, res) => {
         const adminExist = await Admin.findOne({email});
 
         if(adminExist) {
-            return res.send("this Admin is already exist")
+            return res.json({
+                message:"this Admin is already exist",
+                
+            })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -63,12 +66,22 @@ export const login = async (req,res) => {
 
         const admin = await Admin.findOne({email});
         if(!admin) {
-            return res.status(404).send("Admin not found");
+            return res.status(404).json({
+                message: "seller not found",
+                success:false,
+                error:true,
+                data:null
+            });
         }
         const isMatchPass = await bcrypt.compare(password, admin.hashPassword);
         
         if(!isMatchPass) {
-            return res.status(400).send("Invalid Password");
+            return res.status(400).json({
+                message:"Invalid Password",
+                success:false,
+                error:true,
+                data:null
+            })
         }
 
         const AdminToken = generateAdminToken(admin);

@@ -44,10 +44,18 @@ export const signup = async (req,res) => {
             secure: true, // Ensure to use secure in production
             sameSite: 'None', // Necessary for cross-domain cookies
         });
-        res.status(201).send('signed successfully');
+        res.status(201).json({
+            message:"signup successfully",
+
+            
+        });
     } catch (error) {
         console.log(error, "Something wrong");
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({
+            message:"signup failed",
+            error: true,
+            success: false   
+        });
     }
 };
 
@@ -61,13 +69,23 @@ export const signin = async (req,res) => {
         console.log(user);
 
         if(!user){
-            return res.status(400).send('user is not exist');
+            return res.status(400).json({
+                message: "User not found",
+                error: true,
+                success: false,
+                data: null
+            });
         }
 
         const matchPassword = await bcrypt.compare(password,user.hashPassword);
 
         if(!matchPassword){
-            return res.status(400).send('password is not match');
+            return res.status(400).json({
+                message:"Invalid Password",
+                error: true,
+                success: false,
+                data: null
+            });
         }
         // else{
         //     res.send('signed in successfully')
@@ -84,7 +102,12 @@ export const signin = async (req,res) => {
             
     } catch (error) {
         console.log(error, "Something wrong");
-      res.status(500).send("Internal Server Error");
+      res.status(500).json({
+        message:"signup failed",
+        error: true,
+        success: false,
+        data: null
+      });
     }
 }
 
