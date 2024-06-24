@@ -31,7 +31,7 @@ const cartSchema = new mongoose.Schema({
     STATUS:{
         type:String,
         required:true,
-        enum:["active","inactive"],
+        enum:["active","inactive","removed"],
         default:"inactive",
     },
    category: {

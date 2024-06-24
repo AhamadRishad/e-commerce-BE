@@ -54,7 +54,7 @@ export const signup = async (req, res) => {
             sameSite: 'None', // Necessary for cross-domain cookies
         });
         res.status(201).json({
-            message:"signed in ! " , AdminToken
+            message:"signed in ! " , AdminToken, success:true
         });
             
 
@@ -167,22 +167,34 @@ export const updateProduct = async (req, res) => {
         
        const relatedAdmin = product.admin;
        const removeRelatedAdmin = await Admin.findById(relatedAdmin);
-    //    console.log("removeRelatedAdmin :",removeRelatedAdmin);
-      const  removeIdFromAdmin = removeRelatedAdmin.cart;
-    //   console.log("removeIdFromAdmin :",removeIdFromAdmin)
-    if(removeIdFromAdmin == id){
-        // console.log('yes its same')
-        removeRelatedAdmin.cart.pop(id)
-        removeRelatedAdmin.save()
+       if (!removeRelatedAdmin) {
+        return res.status(404).send("Admin not found");
     }
-      const remove = await Cart.deleteOne({ _id: id })
-       
+       console.log("removeRelatedAdmin :",removeRelatedAdmin);
+
+       const removeIdFromAdminIndex = removeRelatedAdmin.cart.indexOf(id);
+       if (removeIdFromAdminIndex > -1) {
+           removeRelatedAdmin.cart.splice(removeIdFromAdminIndex, 1); // Removes the specific product ID
+           await removeRelatedAdmin.save();
+       }
+
+    //   const  removeIdFromAdmin = removeRelatedAdmin.cart;
+    // //   console.log("removeIdFromAdmin :",removeIdFromAdmin)
+    // if(removeIdFromAdmin == id){
+    //     // console.log('yes its same')
+    //     removeRelatedAdmin.cart.pop(id)
+    //     removeRelatedAdmin.save()
+    // }
+    
+    //   const remove = await Cart.deleteOne({ _id: id })
+       product.STATUS = 'removed'
+       await product.save();
         console.log("product :",product);
         console.log("admin id :", product.admin)
 
-        if(!remove) {
-            return res.status(404).send("failed to remove");
-        }
+        // if(!remove) {
+        //     return res.status(404).send("failed to remove");
+        // }
 
         return res.send('removed successfully')
     } catch (error) {
