@@ -107,6 +107,23 @@ managerRouter.get('/all-users',authenticateUser,async(req,res)=> {
 })
 
 
+async function fetchWithRetry(fn, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+      try {
+          return await fn();
+      } catch (error) {
+          if (error.statusCode === 429 && i < retries - 1) {
+              console.warn(`Rate limit exceeded. Retrying in ${delay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              delay *= 2; // Exponential backoff
+          } else {
+              throw error;
+          }
+      }
+  }
+}
+
+
 managerRouter.get('/all-orders', authenticateUser, async (req, res) => {
     try {
         console.log('hitted all orders API')
@@ -145,7 +162,9 @@ managerRouter.get('/all-orders', authenticateUser, async (req, res) => {
                     productDetails: product
                 };
             }));
-            const paymentDetails = await razorpayInstance.payments.fetch(order.razorpay_payment_id);
+            // const paymentDetails = await razorpayInstance.payments.fetch(order.razorpay_payment_id);
+
+            const paymentDetails = await fetchWithRetry(() => razorpayInstance.payments.fetch(order.razorpay_payment_id));
 
             return {
                 ...order.toObject(),
